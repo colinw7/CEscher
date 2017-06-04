@@ -1,4 +1,4 @@
 # CEscher
 Display Escher Tiled Pattern
 
-[image]: doc/escher.png "Screen Shot"
+![screenshot](doc/escher.png "Screen Shot")
