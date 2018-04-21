@@ -1,5 +1,7 @@
 #include <CEscher.h>
 #include <CMathGeom2D.h>
+#include <CRGBUtil.h>
+#include <CHSV.h>
 
 CEscher::
 CEscher()
