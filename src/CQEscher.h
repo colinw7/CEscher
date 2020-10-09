@@ -42,9 +42,9 @@ class CQEscher : public QFrame, public CEscher {
 
   CPath2D *createPath() const override;
 
-  void resizeEvent(QResizeEvent *);
+  void resizeEvent(QResizeEvent *) override;
 
-  void paintEvent(QPaintEvent *);
+  void paintEvent(QPaintEvent *) override;
 
   void setPen(const CPen &pen) override;
   void setBrush(const CBrush &brush) override;
@@ -54,11 +54,11 @@ class CQEscher : public QFrame, public CEscher {
   void stroke(CPath2D *path) override;
   void fill(CPath2D *path) override;
 
-  QSize sizeHint() const { return QSize(800, 800); }
+  QSize sizeHint() const override { return QSize(800, 800); }
 
  private:
   CDisplayRange2D range_;
-  QPainter*       painter_    { nullptr };
+  QPainter*       painter_ { nullptr };
 };
 
 #endif

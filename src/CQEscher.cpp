@@ -1,6 +1,9 @@
 #include <CQEscher.h>
 #include <CQPath2D.h>
 #include <CQUtil.h>
+#include <CQPenUtil.h>
+#include <CQBrushUtil.h>
+
 #include <QLabel>
 #include <QCheckBox>
 #include <QSpinBox>
@@ -246,14 +249,14 @@ void
 CQEscher::
 setPen(const CPen &pen)
 {
-  painter_->setPen(CQUtil::toQPen(pen));
+  painter_->setPen(CQPenUtil::toQPen(pen));
 }
 
 void
 CQEscher::
 setBrush(const CBrush &brush)
 {
-  painter_->setBrush(CQUtil::toQBrush(brush));
+  painter_->setBrush(CQBrushUtil::toQBrush(brush));
 }
 
 void
