@@ -6,7 +6,7 @@ main(int argc, char **argv)
 {
   CQApp app(argc, argv);
 
-  CQEscherApp *escher = new CQEscherApp;
+  auto *escher = new CQEscherApp;
 
   escher->show();
 
