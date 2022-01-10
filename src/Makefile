@@ -435,6 +435,9 @@ compiler_moc_header_clean:
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
 		../../CUtil/include/CRefPtr.h \
+		../../CImageLib/include/CImageResizeType.h \
+		../../CImageLib/include/CImageConvolveData.h \
+		../../CImageLib/include/CImageTileData.h \
 		../../CFont/include/CFont.h \
 		../../CFont/include/CFontPtr.h \
 		../../CFont/include/CFontStyle.h \
@@ -507,6 +510,9 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
 		../../CUtil/include/CRefPtr.h \
+		../../CImageLib/include/CImageResizeType.h \
+		../../CImageLib/include/CImageConvolveData.h \
+		../../CImageLib/include/CImageTileData.h \
 		../../CFont/include/CFont.h \
 		../../CFont/include/CFontPtr.h \
 		../../CFont/include/CFontStyle.h \
@@ -562,6 +568,9 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
 		../../CUtil/include/CRefPtr.h \
+		../../CImageLib/include/CImageResizeType.h \
+		../../CImageLib/include/CImageConvolveData.h \
+		../../CImageLib/include/CImageTileData.h \
 		../../CFont/include/CFont.h \
 		../../CFont/include/CFontPtr.h \
 		../../CFont/include/CFontStyle.h \
@@ -623,6 +632,9 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 		../../CUtil/include/COptVal.h \
 		../../CImageLib/include/CImagePtr.h \
 		../../CUtil/include/CRefPtr.h \
+		../../CImageLib/include/CImageResizeType.h \
+		../../CImageLib/include/CImageConvolveData.h \
+		../../CImageLib/include/CImageTileData.h \
 		../../CFont/include/CFont.h \
 		../../CFont/include/CFontPtr.h \
 		../../CFont/include/CFontStyle.h \

@@ -7,6 +7,8 @@
 #include <QFrame>
 
 class CQEscher;
+class CQPath2D;
+
 class QCheckBox;
 class QSpinBox;
 class QPainter;
@@ -15,7 +17,9 @@ class CQEscherApp : public QFrame {
   Q_OBJECT
 
  public:
-  CQEscherApp(QWidget *parent=0);
+  CQEscherApp(QWidget *parent=nullptr);
+
+  void saveSVG(const QString &filename) const;
 
  private slots:
   void updateStateLater();
@@ -56,9 +60,20 @@ class CQEscher : public QFrame, public CEscher {
 
   QSize sizeHint() const override { return QSize(800, 800); }
 
+  void saveSVG(const QString &filename) const;
+
+  CPoint2D transformPoint(const CPoint2D &p) const;
+
+ private:
+  QString pathToSVGString(CQPath2D *path) const;
+
  private:
   CDisplayRange2D range_;
   QPainter*       painter_ { nullptr };
+  mutable FILE*   svgFp_ { nullptr };
+  mutable CRGBA   svgBg_;
+  mutable CRGBA   svgFg_;
+  mutable int     svgSize_ { 1024 };
 };
 
 #endif

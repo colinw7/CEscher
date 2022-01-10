@@ -22,11 +22,11 @@ CQEscherApp(QWidget *parent) :
 
   layout->addWidget(escher_);
 
-  QFrame *control = new QFrame;
+  auto *control = new QFrame;
 
   control->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
-  QGridLayout *controlLayout = new QGridLayout(control);
+  auto *controlLayout = new QGridLayout(control);
 
   borders_ = new QCheckBox;
 
@@ -70,6 +70,13 @@ updateState()
   escher_->addShapes();
 
   escher_->update();
+}
+
+void
+CQEscherApp::
+saveSVG(const QString &filename) const
+{
+  escher_->saveSVG(filename);
 }
 
 //------
@@ -249,39 +256,177 @@ void
 CQEscher::
 setPen(const CPen &pen)
 {
-  painter_->setPen(CQPenUtil::toQPen(pen));
+  if (svgFp_) {
+    svgFg_ = pen.getColor();
+  }
+  else {
+    painter_->setPen(CQPenUtil::toQPen(pen));
+  }
 }
 
 void
 CQEscher::
 setBrush(const CBrush &brush)
 {
-  painter_->setBrush(CQBrushUtil::toQBrush(brush));
+  if (svgFp_) {
+    svgBg_ = brush.getColor();
+  }
+  else {
+    painter_->setBrush(CQBrushUtil::toQBrush(brush));
+  }
 }
 
 void
 CQEscher::
 drawLine(const CPoint2D &p1, const CPoint2D &p2)
 {
-  painter_->drawLine(CQUtil::toQPoint(p1), CQUtil::toQPoint(p2));
+  if (svgFp_) {
+    auto p1t = transformPoint(p1);
+    auto p2t = transformPoint(p2);
+
+    auto cmd = QString("<path d=\"M%1,%2 L%3,%4\" style=\"stroke: #000000; fill: none;\"/>\n").
+                arg(p1t.x).arg(p1t.y).arg(p2t.x).arg(p2t.y);
+
+    fputs(cmd.toStdString().c_str(), svgFp_);
+  }
+  else {
+    painter_->drawLine(CQUtil::toQPoint(p1), CQUtil::toQPoint(p2));
+  }
 }
 
 void
 CQEscher::
 stroke(CPath2D *path)
 {
-  CQPath2D *qpath = dynamic_cast<CQPath2D *>(path);
+  auto *qpath = dynamic_cast<CQPath2D *>(path);
+  if (! qpath) return;
 
-  if (qpath)
+  if (svgFp_) {
+    auto str = pathToSVGString(qpath);
+
+    auto colorStr = svgFg_.getRGB().stringEncode();
+
+    auto cmd = QString("<path d=\"%1\" style=\"stroke: %2; fill: none;\"/>\n").
+                 arg(str).arg(QString::fromStdString(colorStr));
+
+    fputs(cmd.toStdString().c_str(), svgFp_);
+  }
+  else {
     qpath->stroke(painter_);
+  }
 }
 
 void
 CQEscher::
 fill(CPath2D *path)
 {
-  CQPath2D *qpath = dynamic_cast<CQPath2D *>(path);
+  auto *qpath = dynamic_cast<CQPath2D *>(path);
+  if (! qpath) return;
 
-  if (qpath)
+  if (svgFp_) {
+    auto str = pathToSVGString(qpath);
+
+    auto colorStr = svgBg_.getRGB().stringEncode();
+
+    auto cmd = QString("<path d=\"%1\" style=\"stroke: none; fill: %2;\"/>\n").
+                 arg(str).arg(QString::fromStdString(colorStr));
+
+    fputs(cmd.toStdString().c_str(), svgFp_);
+  }
+  else {
     qpath->fill(painter_);
+  }
+}
+
+void
+CQEscher::
+saveSVG(const QString &filename) const
+{
+  auto *th = const_cast<CQEscher *>(this);
+
+  svgFp_ = fopen(filename.toStdString().c_str(), "w");
+  if (! svgFp_) return;
+
+  auto cmd = QString("<svg viewBox=\"0 0 %1 %2\">\n").arg(svgSize_).arg(svgSize_);
+
+  fputs(cmd.toStdString().c_str(), svgFp_);
+
+  for (const auto &shape : shapes()) {
+    shape.draw(th);
+  }
+
+  fputs("</svg>\n", svgFp_);
+
+  fclose(svgFp_);
+
+  svgFp_ = nullptr;
+}
+
+QString
+CQEscher::
+pathToSVGString(CQPath2D *path) const
+{
+  class PathVisitor : public CQPath2D::PathVisitor {
+   public:
+    PathVisitor(CQEscher *escher) :
+     escher_(escher) {
+    }
+
+    void moveTo(const CPoint2D &p) override {
+      auto pt = escher_->transformPoint(p);
+
+      if (str_.length()) str_ += " ";
+
+      str_ += QString("M %1 %2").arg(pt.x).arg(pt.y);
+    }
+
+    void lineTo(const CPoint2D &p) override {
+      auto pt = escher_->transformPoint(p);
+
+      if (str_.length()) str_ += " ";
+
+      str_ += QString("L %1 %2").arg(pt.x).arg(pt.y);
+    }
+
+    void quadTo(const CPoint2D &p1, const CPoint2D &p2) override {
+      auto p1t = escher_->transformPoint(p1);
+      auto p2t = escher_->transformPoint(p2);
+
+      if (str_.length()) str_ += " ";
+
+      str_ += QString("Q %1 %2 %3 %4").arg(p1t.x).arg(p1t.y).arg(p2t.x).arg(p2t.y);
+    }
+
+    void curveTo(const CPoint2D &p1, const CPoint2D &p2, const CPoint2D &p3) override {
+      auto p1t = escher_->transformPoint(p1);
+      auto p2t = escher_->transformPoint(p2);
+      auto p3t = escher_->transformPoint(p3);
+
+      if (str_.length()) str_ += " ";
+
+      str_ += QString("C %1 %2 %3 %4 %5 %6").
+                arg(p1t.x).arg(p1t.y).arg(p2t.x).arg(p2t.y).arg(p3t.x).arg(p3t.y);
+    }
+
+    const QString &str() const { return str_; }
+
+   private:
+    CQEscher *escher_ { nullptr };
+    QString   str_;
+  };
+
+  auto *th = const_cast<CQEscher *>(this);
+
+  PathVisitor visitor(th);
+
+  path->visit(visitor);
+
+  return visitor.str();
+}
+
+CPoint2D
+CQEscher::
+transformPoint(const CPoint2D &p) const
+{
+  return CPoint2D(p.x*svgSize_, p.y*svgSize_);
 }
