@@ -243,7 +243,7 @@ paintEvent(QPaintEvent *)
 
   painter_->fillRect(rect(), Qt::white);
 
-  painter_->setWorldMatrix(CQUtil::toQMatrix(range_.getMatrix()));
+  painter_->setWorldTransform(CQUtil::toQTransform(range_.getMatrix()));
 
   for (const auto &shape : shapes()) {
     shape.draw(this);
