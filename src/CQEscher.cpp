@@ -1,6 +1,7 @@
 #include <CQEscher.h>
 #include <CQPath2D.h>
 #include <CQUtil.h>
+#include <CQUtilGeom.h>
 #include <CQPenUtil.h>
 #include <CQBrushUtil.h>
 
