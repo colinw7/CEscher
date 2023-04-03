@@ -40,7 +40,7 @@ class CQEscher : public QFrame, public CEscher {
   Q_PROPERTY(int  iterations READ iterations   WRITE setIterations)
 
  public:
-  CQEscher(QWidget *parent=0);
+  CQEscher(QWidget *parent=nullptr);
 
   void addShapes();
 
